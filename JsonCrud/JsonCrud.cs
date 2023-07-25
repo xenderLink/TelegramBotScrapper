@@ -14,6 +14,7 @@ namespace JsonCrud;
 sealed class JsonVacancy
 {
     private readonly string path = @"./JsonCrud/vacancies.json";
+    private string json = String.Empty;
 
     private JsonSerializerOptions opts;
 
@@ -34,32 +35,41 @@ sealed class JsonVacancy
             {
                 FileInfo fi = new (path);
 
-                if (fi.CreationTime < DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+5)).DateTime.AddDays(-3))
+                if (fi.CreationTime < DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+5)).DateTime.AddDays(-3)) // удалять через три дня
                 {
                     fi.Delete();
-                }
 
-                var json = await File.ReadAllTextAsync(path);
-                var vacancies = JsonSerializer.Deserialize<Dictionary<string, Vacancy>>(json);
+                    json = JsonSerializer.Serialize(recievedVac, options: opts);
 
-                foreach (var vacancy in recievedVac)
-                {
-                    if (vacancies.ContainsKey(vacancy.Key) == false)
+                    using (StreamWriter sw = new (path))
                     {
-                        vacancies.Add(vacancy.Key, vacancy.Value);
-                    }
+                        await sw.WriteAsync(json);
+                    };
                 }
-
-                json = JsonSerializer.Serialize(vacancies, options: opts);
-
-                using (StreamWriter sw = new (path))
+                else
                 {
-                    await sw.WriteAsync(json);
+                    json = await File.ReadAllTextAsync(path);
+                    var vacancies = JsonSerializer.Deserialize<Dictionary<string, Vacancy>>(json);
+
+                    foreach (var vacancy in recievedVac)
+                    {
+                        if (vacancies.ContainsKey(vacancy.Key) == false)
+                        {
+                            vacancies.Add(vacancy.Key, vacancy.Value);
+                        }
+                    }
+
+                    json = JsonSerializer.Serialize(vacancies, options: opts);
+
+                    using (StreamWriter sw = new (path))
+                    {
+                        await sw.WriteAsync(json);
+                    }
                 }
             }
             else
             {
-                var json = JsonSerializer.Serialize(recievedVac, options: opts);
+                json = JsonSerializer.Serialize(recievedVac, options: opts);
 
                 using (StreamWriter sw = new (path))
                 {

@@ -15,6 +15,7 @@ namespace BotSpace;
 /// <remarks>
 /// При отключении бота и его перепзапуска, кнопка "Далее" возвращает список городов, а не вакансии в виду 
 /// NullReferenceException.
+/// </remarks>
 sealed class Bot
 {
     private TelegramBotClient? Client;
@@ -68,15 +69,15 @@ sealed class Bot
                                        }
         });
 
+        var citiesButton = new InlineKeyboardButton[] { "К списку городов" };
         navKeyboard = new (new []
         {
             new InlineKeyboardButton[] { "Далее" },
-            new InlineKeyboardButton[] { "К списку городов" }
+            citiesButton
         });
-
         citiesKeyboard = new (new []
         {
-            new InlineKeyboardButton[] { "К списку городов" }
+            citiesButton
         });
 
         var user = await Client.GetMeAsync();

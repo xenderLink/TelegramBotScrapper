@@ -118,7 +118,7 @@ sealed class Bot
                 {
                     Chlb = await json.GetVacancies(update.CallbackQuery.Data);
                     
-                    if (Chlb is null || Chlb.Any() is false)
+                    if (Chlb is null || Chlb.Count is 0)
                     {
                         await NoVacancies(botClient, update);        
                     }
@@ -136,7 +136,7 @@ sealed class Bot
                 {
                     Ekb = await json.GetVacancies(update.CallbackQuery.Data);
                     
-                    if (Ekb is null || Ekb.Any() is false)
+                    if (Ekb is null || Ekb.Count is 0)
                     {
                         await NoVacancies(botClient, update);
                     }
@@ -154,7 +154,7 @@ sealed class Bot
                 {
                     Msk = await json.GetVacancies(update.CallbackQuery.Data);
                     
-                    if (Msk is null || Msk.Any() is false)
+                    if (Msk is null || Msk.Count is 0)
                     {
                         await NoVacancies(botClient, update);
                     }

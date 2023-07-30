@@ -126,8 +126,8 @@ sealed class Bot
                     {
                         StringBuilder sb = new ();
                         
-                        FirstChunkVacancies(vacancies: Chlb, index: ref c, stringBuilder: sb);
-                        await SendVacancies(botClient, update, stringBuilder: sb, city: cities[0], remainElements: Chlb.Count); 
+                        FirstChunkVacancies(vacancies: Chlb, stringBuilder: sb, index: ref c);
+                        await SendVacancies(botClient, update, stringBuilder: sb, remainElements: Chlb.Count, city: cities[0]); 
                     }
                 }
                 break;
@@ -144,8 +144,8 @@ sealed class Bot
                     {
                         StringBuilder sb = new ();
 
-                        FirstChunkVacancies(vacancies: Ekb, index: ref e, stringBuilder: sb);
-                        await SendVacancies(botClient, update, stringBuilder: sb, city: cities[1], remainElements: Ekb.Count); 
+                        FirstChunkVacancies(vacancies: Ekb, stringBuilder: sb, index: ref e);
+                        await SendVacancies(botClient, update, stringBuilder: sb, remainElements: Chlb.Count, city: cities[1]); ; 
                     }
                 }
                 break;
@@ -162,8 +162,8 @@ sealed class Bot
                     {
                         StringBuilder sb = new ();
                         
-                        FirstChunkVacancies(vacancies: Msk, index: ref m, stringBuilder: sb);
-                        await SendVacancies(botClient, update, stringBuilder: sb, city: cities[2], remainElements: Msk.Count); 
+                        FirstChunkVacancies(vacancies: Msk, stringBuilder: sb, index: ref m);
+                        await SendVacancies(botClient, update, stringBuilder: sb, remainElements: Chlb.Count, city: cities[2]); 
                     }
                 }
                 break;
@@ -180,8 +180,8 @@ sealed class Bot
                     {
                         StringBuilder sb = new ();
 
-                        FirstChunkVacancies(vacancies: Spb, index: ref s, stringBuilder: sb);
-                        await SendVacancies(botClient, update, stringBuilder: sb, city: cities[2], remainElements: Spb.Count);;
+                        FirstChunkVacancies(vacancies: Spb, stringBuilder: sb, index: ref s);
+                        await SendVacancies(botClient, update, stringBuilder: sb, remainElements: Chlb.Count, city: cities[3]); 
                     }
                 }
                 break;

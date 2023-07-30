@@ -197,7 +197,7 @@ sealed class Bot
                             StringBuilder sb = new ();
                             
                             NextChunkVacancies(vacancies: Chlb, index: ref c, stringBuilder: sb, remainElements: ref remElem);
-                            await SendVacancies(botClient, update, stringBuilder: sb, city: cities[0], remainElements: remElem);                                                                       
+                            await SendVacancies(botClient, update, stringBuilder: sb, remainElements: remElem, city: cities[0]);                                                                       
                         }
                         else if (update.CallbackQuery.Message.Text.Contains(cities[1])) // Екатеринбург
                         {
@@ -206,7 +206,7 @@ sealed class Bot
                             StringBuilder sb = new ();
                             
                             NextChunkVacancies(vacancies: Ekb, index: ref e, stringBuilder: sb, remainElements: ref remElem);
-                            await SendVacancies(botClient, update, stringBuilder: sb, city: cities[1], remainElements: remElem);
+                            await SendVacancies(botClient, update, stringBuilder: sb, remainElements: remElem, city: cities[1]);
                         }
                         else if (update.CallbackQuery.Message.Text.Contains(cities[2])) // Москва
                         {
@@ -214,8 +214,8 @@ sealed class Bot
 
                             StringBuilder sb = new ();
             
-                            NextChunkVacancies(vacancies: Msk, index: ref m, stringBuilder: sb, remainElements: ref remElem);
-                            await SendVacancies(botClient, update, stringBuilder: sb, city: cities[2], remainElements: remElem);
+                            NextChunkVacancies(vacancies: Msk, stringBuilder: sb, remainElements: ref remElem, index: ref m);
+                            await SendVacancies(botClient, update, stringBuilder: sb, remainElements: remElem, city: cities[2]);
                         }
                         else if (update.CallbackQuery.Message.Text.Contains(cities[3])) // Санкт-Петербург
                         {
@@ -223,8 +223,8 @@ sealed class Bot
                             
                             StringBuilder sb = new ();
                 
-                            NextChunkVacancies(vacancies: Spb, index: ref s, stringBuilder: sb, remainElements: ref remElem);
-                            await SendVacancies(botClient, update, stringBuilder: sb, city: cities[3], remainElements: remElem);
+                            NextChunkVacancies(vacancies: Spb, stringBuilder: sb, remainElements: ref remElem, index: ref s);
+                            await SendVacancies(botClient, update, stringBuilder: sb, remainElements: remElem, city: cities[3]);
                         }
                     }
                     catch (Exception)
@@ -296,7 +296,7 @@ sealed class Bot
         catch (Exception) {};
     }
 
-    private void FirstChunkVacancies(IReadOnlyList<(string, string)> vacancies, ref int index, StringBuilder stringBuilder)
+    private void FirstChunkVacancies(IReadOnlyList<(string, string)> vacancies, StringBuilder stringBuilder, ref int index)
     {
         if (vacancies.Count <= 10)
         {
@@ -314,7 +314,7 @@ sealed class Bot
         }
     }
 
-    private void NextChunkVacancies(IReadOnlyList<(string, string)> vacancies, ref int index, StringBuilder stringBuilder, ref int remainElements)
+    private void NextChunkVacancies(IReadOnlyList<(string, string)> vacancies, StringBuilder stringBuilder, ref int remainElements, ref int index)
     {
         remainElements = vacancies.Count - index;
 
@@ -337,7 +337,7 @@ sealed class Bot
     }
 
     private async Task SendVacancies(ITelegramBotClient botClient, Update update, StringBuilder stringBuilder, 
-                                     string city, int remainElements)
+                                     int remainElements, string city)
     {
         if (remainElements <= 10)
         {

@@ -35,7 +35,7 @@ sealed class JsonVacancy
             {
                 FileInfo fi = new (path);
 
-                if (fi.CreationTime < DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+5)).DateTime.AddDays(-3)) // удалять через три дня
+                if (fi.CreationTimeUtc.Date < DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+5)).DateTime.AddDays(-3).Date) // удалять через три дня
                 {
                     fi.Delete();
 

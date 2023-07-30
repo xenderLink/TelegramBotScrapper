@@ -19,7 +19,7 @@ namespace BotSpace;
 sealed class Bot
 {
     private TelegramBotClient? Client;
-    private readonly string token = "6090888687:AAEIa6pU-9w0dmWrlTPsUdgcWA5ASZMvOUk";
+    private readonly string token = "6090888687:AAGRhpeWsQ0G7_yMKxKgV5GtdqoOngNpNnQ";
     ReceiverOptions receiverOptions;
 
     InlineKeyboardMarkup inlineKeyboardMarkup;
@@ -47,16 +47,6 @@ sealed class Bot
                 UpdateType.CallbackQuery
             }
         };
-    } 
-    
-    public async Task Start()
-    {
-        using CancellationTokenSource cts = new ();
-
-        Client.StartReceiving(
-               updateHandler: HandleUpdateAsync, 
-               pollingErrorHandler: HandlePollingAsync, receiverOptions,
-               cancellationToken: cts.Token );
 
         inlineKeyboardMarkup = new (new []
         {
@@ -79,6 +69,16 @@ sealed class Bot
         {
             citiesButton
         });
+    } 
+    
+    public async Task Start()
+    {
+        using CancellationTokenSource cts = new ();
+
+        Client.StartReceiving(
+               updateHandler: HandleUpdateAsync, 
+               pollingErrorHandler: HandlePollingAsync, receiverOptions,
+               cancellationToken: cts.Token );
 
         var user = await Client.GetMeAsync();
 
@@ -253,9 +253,12 @@ sealed class Bot
         }
     }
 
-    public static async Task HandlePollingAsync(ITelegramBotClient client, Exception exception, CancellationToken token)
+    public async Task HandlePollingAsync(ITelegramBotClient client, Exception exception, CancellationToken token)
     {
         Console.WriteLine($"HandException: {exception}");
+        
+        Bot bt = new ();
+        await bt.Start();
     }
 
     private async Task SendCities(ITelegramBotClient botClient, Update update)

@@ -39,9 +39,9 @@ public sealed class Scrapper
             options = new ();
             options.AddArguments(new string [] {
                     UserAgent,
-                    // "--start-maximized",
-                    "--window-size=1920,1050",
-                    "--headless",
+                    "--start-maximized",
+                    // "--window-size=1920,1050",
+                    // "--headless",
                     "--disable-logging",
                     "--no-sandbox",
                     "--disable-blink-features=AutomationControlled",
@@ -64,7 +64,7 @@ public sealed class Scrapper
             }
 
             driver.Dispose();
-            Thread.Sleep(TimeSpan.FromHours(4));
+            Thread.Sleep(TimeSpan.FromHours(7));
         }
     }
 
@@ -165,9 +165,6 @@ public sealed class Scrapper
                      break;
                 }
                 
-                driver.FindElement(By.XPath("//span[text()='дальше']"))
-                      .FindElement(By.XPath("./.."))
-                      .Click();
                 Thread.Sleep(milliseconds[rand.Next(0, 3)]);
                 
             } while (true);
@@ -209,7 +206,9 @@ public sealed class Scrapper
     {
         try
         {
-            driver.FindElement(By.XPath(element));
+            driver.FindElement(By.XPath(element))
+                  .FindElement(By.XPath("./.."))
+                  .Click();
             return true;
         }
         catch (NoSuchElementException)

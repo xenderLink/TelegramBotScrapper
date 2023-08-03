@@ -60,11 +60,13 @@ sealed class Bot
         });
 
         var citiesButton = new InlineKeyboardButton[] { "К списку городов" };
+        
         navKeyboard = new (new []
         {
             new InlineKeyboardButton[] { "Далее" },
             citiesButton
         });
+        
         citiesKeyboard = new (new []
         {
             citiesButton

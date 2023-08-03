@@ -2,6 +2,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using OpenQA.Selenium; 
 using OpenQA.Selenium.Chrome;
+using SeleniumExtras.WaitHelpers;
+using OpenQA.Selenium.Support.UI;
 
 using VacancyModel;
 using JsonCrud;
@@ -15,6 +17,7 @@ namespace VacScrapper;
 public sealed class Scrapper
 {
     private IWebDriver driver;
+    private WebDriverWait wait;
     private ChromeOptions options;
     
     private Random rand;
@@ -39,15 +42,18 @@ public sealed class Scrapper
             options = new ();
             options.AddArguments(new string [] {
                     UserAgent,
-                    "--start-maximized",
-                    // "--window-size=1920,1050",
-                    // "--headless",
+                    // "--start-maximized",
+                    "--window-size=1920,1050",
+                    "--headless",
                     "--disable-logging",
                     "--no-sandbox",
                     "--disable-blink-features=AutomationControlled",
                     });
 
             driver = new ChromeDriver(".", options, TimeSpan.FromMinutes(3));
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            wait.PollingInterval = TimeSpan.FromMilliseconds(200);
+            
             Thread.Sleep(5000);
 
             if (DriverIsNavigated() is false)
@@ -75,8 +81,8 @@ public sealed class Scrapper
             driver.FindElement(By.XPath("//button[@class='bloko-button bloko-button_kind-primary bloko-button_scale-small']"))
                   .Click();
 
-            Func<string> inputText = delegate
-            {
+            Func<string> inputText = delegate{
+
                 if (rand.Next(1, 3) == 1)
                     return "C# Developer";
 
@@ -137,9 +143,9 @@ public sealed class Scrapper
             do
             {
                 var vacancyElements = driver.FindElement(By.CssSelector("main[class='vacancy-serp-content']"))
-                                            .FindElements(By.XPath("//div[@class='vacancy-serp-item__layout']"));
+                                            .FindElements(By.XPath("//div[@class='vacancy-serp-item__layout']")); // блоки с вакансиями
 
-                foreach (var vacancy in vacancyElements)
+                foreach (var vacancy in vacancyElements)  // перебор блоков и собирание информацию с каждого из них
                 {
                     var anchor = vacancy.FindElement(By.TagName("a"));
                     url.Append(anchor.GetAttribute("href"));
@@ -159,7 +165,7 @@ public sealed class Scrapper
                     url.Clear();
                 }                
  
-                if (NextButtonExists("//span[text()='дальше']") is false) // кнопка "Дальше"
+                if (NextButtonExists("//span[text()='дальше']") is false) // кнопка "Дальше" и если её нет, то выйти из цикла по перебору страниц
                 {
                      Thread.Sleep(milliseconds[rand.Next(0, 3)]);
                      break;
@@ -206,9 +212,11 @@ public sealed class Scrapper
     {
         try
         {
-            driver.FindElement(By.XPath(element))
-                  .FindElement(By.XPath("./.."))
-                  .Click();
+            var nextButton = driver.FindElement(By.XPath(element))
+                                   .FindElement(By.XPath("./.."));                     // ищем кнопку
+
+            wait.Until(ExpectedConditions.ElementToBeClickable(nextButton)).Click();   // когда нашли, то ждём, чтобы она стала "нажимаемой"
+            
             return true;
         }
         catch (NoSuchElementException)

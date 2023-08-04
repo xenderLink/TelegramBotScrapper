@@ -119,17 +119,21 @@ sealed class Bot
                 {
                     Chlb = await json.GetVacancies(update.CallbackQuery.Data);
                     
-                    if (Chlb is null || Chlb.Count is 0)
+                    if (Chlb.Count is 0)
                     {
                         await NoVacancies(botClient, update);        
                     }
-                    else
+                    else if (Chlb.Count > 0)
                     {
                         StringBuilder sb = new ();
                         
                         FirstChunkVacancies(vacancies: Chlb, index: ref cIdx, stringBuilder: sb);
                         await SendVacancies(botClient, update, stringBuilder: sb, remainElements: Chlb.Count, city: cities[0]); 
                     }
+                    else if (Chlb is null)
+                    {
+                        await SendCities(botClient, update);
+                    } 
                 }
                 break;
 

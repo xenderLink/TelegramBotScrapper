@@ -3,10 +3,9 @@ using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
+using JsonCrud;
 
 using Update = Telegram.Bot.Types.Update;
-
-using JsonCrud;
 
 namespace BotSpace;
 /// <summary>
@@ -32,7 +31,7 @@ sealed class Bot
 
     JsonVacancy json;   
     private IReadOnlyList<(string, string)> Chlb, Ekb, Msk, Spb;
-    private int c, e, m, s;  //индексы для доступа к элементам массивов вакансий
+    private int cIdx, eIdx, mIdx, sIdx;  //индексы для доступа к элементам массивов вакансий
 
     public Bot()
     {
@@ -128,7 +127,7 @@ sealed class Bot
                     {
                         StringBuilder sb = new ();
                         
-                        FirstChunkVacancies(vacancies: Chlb, stringBuilder: sb, index: ref c);
+                        FirstChunkVacancies(vacancies: Chlb, index: ref cIdx, stringBuilder: sb);
                         await SendVacancies(botClient, update, stringBuilder: sb, remainElements: Chlb.Count, city: cities[0]); 
                     }
                 }
@@ -138,16 +137,20 @@ sealed class Bot
                 {
                     Ekb = await json.GetVacancies(update.CallbackQuery.Data);
                     
-                    if (Ekb is null || Ekb.Count is 0)
+                    if (Ekb.Count is 0) // здесь ошибка убрать null
                     {
                         await NoVacancies(botClient, update);
                     }
-                    else
+                    else if (Ekb.Count > 0)
                     {
                         StringBuilder sb = new ();
 
-                        FirstChunkVacancies(vacancies: Ekb, stringBuilder: sb, index: ref e);
-                        await SendVacancies(botClient, update, stringBuilder: sb, remainElements: Chlb.Count, city: cities[1]); ; 
+                        FirstChunkVacancies(vacancies: Ekb, index: ref eIdx, stringBuilder: sb);
+                        await SendVacancies(botClient, update, stringBuilder: sb, remainElements: Ekb.Count, city: cities[1]); ; 
+                    }
+                    else if (Ekb is null)
+                    {
+                        await SendCities(botClient, update); 
                     }
                 }
                 break;
@@ -156,16 +159,20 @@ sealed class Bot
                 {
                     Msk = await json.GetVacancies(update.CallbackQuery.Data);
                     
-                    if (Msk is null || Msk.Count is 0)
+                    if (Msk.Count is 0)
                     {
                         await NoVacancies(botClient, update);
                     }
-                    else
+                    else if (Msk.Count > 0)
                     {
                         StringBuilder sb = new ();
                         
-                        FirstChunkVacancies(vacancies: Msk, stringBuilder: sb, index: ref m);
-                        await SendVacancies(botClient, update, stringBuilder: sb, remainElements: Chlb.Count, city: cities[2]); 
+                        FirstChunkVacancies(vacancies: Msk, index: ref mIdx, stringBuilder: sb);
+                        await SendVacancies(botClient, update, stringBuilder: sb, remainElements: Msk.Count, city: cities[2]); 
+                    }
+                    else if (Msk is null)
+                    {
+                        await SendCities(botClient, update);
                     }
                 }
                 break;
@@ -174,16 +181,20 @@ sealed class Bot
                 {
                     Spb = await json.GetVacancies(update.CallbackQuery.Data);
                     
-                    if (Spb is null || Spb.Count is 0)
+                    if (Spb.Count is 0)
                     {
                         await NoVacancies(botClient, update);
                     }
-                    else
+                    else if (Spb.Count > 0)
                     {
                         StringBuilder sb = new ();
 
-                        FirstChunkVacancies(vacancies: Spb, stringBuilder: sb, index: ref s);
-                        await SendVacancies(botClient, update, stringBuilder: sb, remainElements: Chlb.Count, city: cities[3]); 
+                        FirstChunkVacancies(vacancies: Spb, index: ref sIdx, stringBuilder: sb);
+                        await SendVacancies(botClient, update, stringBuilder: sb, remainElements: Spb.Count, city: cities[3]); 
+                    }
+                    else if (Spb is null)
+                    {
+                        await SendCities(botClient, update);
                     }
                 }
                 break;
@@ -194,39 +205,55 @@ sealed class Bot
                     {
                         if (update.CallbackQuery.Message.Text.Contains(cities[0])) // Челябинск
                         {
-                            int remElem = 0;
+                            if (Chlb is null) await SendCities(botClient, update);
 
-                            StringBuilder sb = new ();
-                            
-                            NextChunkVacancies(vacancies: Chlb, index: ref c, stringBuilder: sb, remainElements: ref remElem);
-                            await SendVacancies(botClient, update, stringBuilder: sb, remainElements: remElem, city: cities[0]);                                                                       
+                            else
+                            {
+                                int remElem = 0;
+                                StringBuilder sb = new ();
+                                
+                                NextChunkVacancies(vacancies: Chlb, index: ref cIdx, stringBuilder: sb, remainElements: ref remElem);
+                                await SendVacancies(botClient, update, stringBuilder: sb, remainElements: remElem, city: cities[0]); 
+                            }
                         }
                         else if (update.CallbackQuery.Message.Text.Contains(cities[1])) // Екатеринбург
                         {
-                            int remElem = 0;
+                            if (Ekb is null) await SendCities(botClient, update);
 
-                            StringBuilder sb = new ();
-                            
-                            NextChunkVacancies(vacancies: Ekb, index: ref e, stringBuilder: sb, remainElements: ref remElem);
-                            await SendVacancies(botClient, update, stringBuilder: sb, remainElements: remElem, city: cities[1]);
+                            else
+                            {
+                                int remElem = 0;
+                                StringBuilder sb = new ();
+                                
+                                NextChunkVacancies(vacancies: Ekb, index: ref eIdx, stringBuilder: sb, remainElements: ref remElem);
+                                await SendVacancies(botClient, update, stringBuilder: sb, remainElements: remElem, city: cities[1]);
+                            }
                         }
                         else if (update.CallbackQuery.Message.Text.Contains(cities[2])) // Москва
                         {
-                            int remElem = 0;
+                            if (Msk is null) await SendCities(botClient, update);
 
-                            StringBuilder sb = new ();
-            
-                            NextChunkVacancies(vacancies: Msk, stringBuilder: sb, remainElements: ref remElem, index: ref m);
-                            await SendVacancies(botClient, update, stringBuilder: sb, remainElements: remElem, city: cities[2]);
+                            else
+                            {
+                                int remElem = 0;
+                                StringBuilder sb = new ();
+                
+                                NextChunkVacancies(vacancies: Msk, index: ref mIdx, stringBuilder: sb, remainElements: ref remElem);
+                                await SendVacancies(botClient, update, stringBuilder: sb, remainElements: remElem, city: cities[2]);
+                            }
                         }
                         else if (update.CallbackQuery.Message.Text.Contains(cities[3])) // Санкт-Петербург
                         {
-                            int remElem = 0;
-                            
-                            StringBuilder sb = new ();
-                
-                            NextChunkVacancies(vacancies: Spb, stringBuilder: sb, remainElements: ref remElem, index: ref s);
-                            await SendVacancies(botClient, update, stringBuilder: sb, remainElements: remElem, city: cities[3]);
+                            if (Spb is null) await SendCities(botClient, update);
+
+                            else
+                            {
+                                int remElem = 0;
+                                StringBuilder sb = new ();
+                    
+                                NextChunkVacancies(vacancies: Spb, index: ref sIdx, stringBuilder: sb, remainElements: ref remElem);
+                                await SendVacancies(botClient, update, stringBuilder: sb, remainElements: remElem, city: cities[3]);
+                            }
                         }
                     }
                     catch (Exception)
@@ -258,9 +285,6 @@ sealed class Bot
     public async Task HandlePollingAsync(ITelegramBotClient client, Exception exception, CancellationToken token)
     {
         Console.WriteLine($"HandException: {exception}");
-        
-        Bot bt = new ();
-        await bt.Start();
     }
 
     private async Task SendCities(ITelegramBotClient botClient, Update update)
@@ -298,7 +322,7 @@ sealed class Bot
         catch (Exception) {};
     }
 
-    private void FirstChunkVacancies(IReadOnlyList<(string, string)> vacancies, StringBuilder stringBuilder, ref int index)
+    private void FirstChunkVacancies(IReadOnlyList<(string, string)> vacancies, ref int index, StringBuilder stringBuilder)
     {
         if (vacancies.Count <= 10)
         {
@@ -316,7 +340,7 @@ sealed class Bot
         }
     }
 
-    private void NextChunkVacancies(IReadOnlyList<(string, string)> vacancies, StringBuilder stringBuilder, ref int remainElements, ref int index)
+    private void NextChunkVacancies(IReadOnlyList<(string, string)> vacancies, ref int index, StringBuilder stringBuilder, ref int remainElements)
     {
         remainElements = vacancies.Count - index;
 

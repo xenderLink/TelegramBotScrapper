@@ -12,8 +12,8 @@ namespace JsonCrud;
 /// </summary>
 sealed class JsonVacancy
 {
-    private readonly string path = @"./JsonCrud/vacancies.json";
-    private string json = String.Empty;
+    private readonly string path = @"../../../JsonCrud/vacancies.json";
+    private string json = string.Empty;
 
     private JsonSerializerOptions opts;
 

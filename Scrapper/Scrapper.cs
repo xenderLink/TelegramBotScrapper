@@ -83,11 +83,24 @@ public sealed class Scrapper
 
             Func<string> inputText = delegate{
 
-                if (rand.Next(1, 3) == 1)
-                    return "C# Developer";
+                string search = string.Empty;
 
-                else
-                    return "C# Разработчик";
+                switch (rand.Next(1, 4))
+                {
+                    case 1:
+                        search = "C# Developer";
+                        break;
+
+                    case 2:
+                        search = "C# Разработчик";
+                        break;
+
+                    case 3:
+                        search = "ASP NET";
+                        break;
+                }
+
+                return search;
             };
 
             driver.FindElement(By.CssSelector("input[data-qa='search-input']"))

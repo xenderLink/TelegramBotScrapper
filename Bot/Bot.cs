@@ -27,7 +27,7 @@ sealed class Bot
 
     private int oldBotMsgId = 0; //ID сообщения для удаления
     private readonly string greetingMessage = "Добро пожаловать в парсер вакансий C#. Выберите город, в котором вас интересует список вакансий.";
-    private readonly string[] cities = {"Челябинск", "Екатеринбург", "Москва", "Санкт-Петербург"};
+    private readonly string[] cities = { "Челябинск", "Екатеринбург", "Москва", "Санкт-Петербург" };
 
     JsonVacancy json;   
     private IReadOnlyList<(string, string)> Chlb, Ekb, Msk, Spb;

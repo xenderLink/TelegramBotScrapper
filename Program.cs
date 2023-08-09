@@ -3,12 +3,12 @@ using VacScrapper;
 
 class Program
 {
-    static async Task Main(string[] args)
+    static async Task Main()
     {
         Bot bot = new ();
         Scrapper scrapper = new ();
 
-        Thread scrapperThread = new Thread(scrapper.Start)
+        Thread scrapperThread = new (scrapper.Start)
         {
             IsBackground = true,
             Name = "Scrapper"

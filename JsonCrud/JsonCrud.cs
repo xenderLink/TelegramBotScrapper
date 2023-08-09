@@ -12,7 +12,7 @@ namespace JsonCrud;
 /// </summary>
 sealed class JsonVacancy
 {
-    private readonly string path = @"../../../JsonCrud/vacancies.json";
+    private readonly string path = JsonPath;
     private string json = string.Empty;
 
     private JsonSerializerOptions opts;
@@ -24,6 +24,14 @@ sealed class JsonVacancy
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             WriteIndented = true
         };
+    }
+
+    private static string JsonPath
+    {
+        get 
+        {
+            return Path.Combine(Directory.GetCurrentDirectory()).ToString() + "/JsonCrud/vacancies.json";
+        }
     }
 
     public async Task Add(Dictionary<string, Vacancy> recievedVac)

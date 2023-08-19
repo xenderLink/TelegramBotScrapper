@@ -18,7 +18,7 @@ namespace BotSpace;
 sealed class Bot
 {
     private TelegramBotClient? Client;
-    private readonly string token = "token";
+    private readonly string token = "6090888687:AAEoYrmu4hIaxSJDUL5FZQrwRBLFkdsS8aQ";
     ReceiverOptions receiverOptions;
 
     InlineKeyboardMarkup inlineKeyboardMarkup;
@@ -113,7 +113,7 @@ sealed class Bot
         {
             await DeleteMessage(botClient, update.CallbackQuery.Message.Chat.Id, oldBotMsgId);
 
-            switch(update.CallbackQuery.Data)
+            switch (update.CallbackQuery.Data)
             {
                 case "Челябинск":
                 {

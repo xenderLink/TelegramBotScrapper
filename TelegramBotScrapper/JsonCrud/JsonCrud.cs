@@ -54,10 +54,8 @@ sealed class JsonVacancy
 
                     foreach (var vacancy in recievedVac)
                     {
-                        if (vacancies.ContainsKey(vacancy.Key) == false)
-                        {
-                            vacancies.Add(vacancy.Key, vacancy.Value);
-                        }
+                        if (vacancies.ContainsKey(vacancy.Key) is false)
+                            vacancies.Add(vacancy.Key, vacancy.Value);                
                     }
 
                     json = JsonSerializer.Serialize(vacancies, options: opts);

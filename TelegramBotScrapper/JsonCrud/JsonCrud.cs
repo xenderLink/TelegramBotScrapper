@@ -26,14 +26,8 @@ sealed class JsonVacancy
         };
     }
 
-    private static string JsonPath
-    {
-        get 
-        {
-            return Path.Combine(Directory.GetCurrentDirectory()).ToString() + "/JsonCrud/vacancies.json";
-        }
-    }
-
+    private static string JsonPath => Path.Combine(Directory.GetCurrentDirectory()).ToString() + "/JsonCrud/vacancies.json";
+        
     public async Task Add(Dictionary<string, Vacancy> recievedVac)
     {
         try
@@ -92,7 +86,7 @@ sealed class JsonVacancy
 
     public async Task<IReadOnlyList<(string, string)>> GetVacancies(string city)
     {
-        if (city is not null)
+        if (!string.IsNullOrEmpty(city))
         {
             if (File.Exists(path))
             {

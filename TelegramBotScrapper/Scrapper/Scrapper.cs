@@ -40,14 +40,20 @@ public sealed class Scrapper
         {
             options = new ();
             options.AddArguments(new string [] {
+                    "--headless",
+                    "--whitelisted-ips=\"\"",
+                    "--disable-dev-shm-usage",
+                    "--no-sandbox",
                     UserAgent,
                     // "--start-maximized",
                     "--window-size=1920,1050",
-                    "--headless",
+                    "--disable-web-security",
+                    "--ignore-certificate-errors",
+                    "--allow-running-insecure-content",
+                    "--allow-insecure-localhost",
+                    "--disable-gpu",
                     "--disable-logging",
-                    "--no-sandbox",
-                    "--disable-blink-features=AutomationControlled",
-                    });
+                    "--disable-blink-features=AutomationControlled" });
 
             driver = new ChromeDriver(".", options, TimeSpan.FromMinutes(3));
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
@@ -77,8 +83,7 @@ public sealed class Scrapper
     {
         try
         {
-            driver.FindElement(By.XPath("//button[@class='bloko-button bloko-button_kind-primary bloko-button_scale-small']"))
-                  .Click();
+            driver.FindElement(By.XPath("//button[@class='bloko-button bloko-button_kind-primary bloko-button_scale-small']")).Click();
 
             Func<string> inputText = delegate{
 
@@ -102,12 +107,10 @@ public sealed class Scrapper
                 return search;
             };
 
-            driver.FindElement(By.CssSelector("input[data-qa='search-input']"))
-                  .SendKeys(inputText());
+            driver.FindElement(By.CssSelector("input[data-qa='search-input']")).SendKeys(inputText());
             Thread.Sleep(milliseconds[rand.Next(0, 3)]);
 
-            driver.FindElement(By.CssSelector("button[data-qa='search-button']"))
-                  .Click();    
+            driver.FindElement(By.CssSelector("button[data-qa='search-button']")).Click();    
             Thread.Sleep(milliseconds[rand.Next(0, 3)]);
 
             var uncheckElmt = driver.FindElement(By.XPath("//legend[text()='Регион']"))
@@ -118,8 +121,7 @@ public sealed class Scrapper
             uncheckElmt.Click();
             Thread.Sleep(milliseconds[rand.Next(0, 3)]);
 
-            driver.FindElement(By.XPath("//button[@class='bloko-link bloko-link_pseudo' and text()='Показать все']"))
-                  .Click();
+            driver.FindElement(By.XPath("//button[@class='bloko-link bloko-link_pseudo' and text()='Показать все']")).Click();
             Thread.Sleep(milliseconds[rand.Next(0, 3)]);
 
             var region = driver.FindElement(By.XPath("//input[@placeholder='Поиск региона']"));
@@ -134,8 +136,7 @@ public sealed class Scrapper
                     }
                     catch (StaleElementReferenceException)
                     {
-                        driver.FindElement(By.XPath("//button[@class='bloko-link bloko-link_pseudo' and text()='Показать все']"))
-                              .Click();
+                        driver.FindElement(By.XPath("//button[@class='bloko-link bloko-link_pseudo' and text()='Показать все']")).Click();
                         Thread.Sleep(milliseconds[rand.Next(0, 3)]);
 
                         region = driver.FindElement(By.XPath("//input[@placeholder='Поиск региона']"));
@@ -162,7 +163,7 @@ public sealed class Scrapper
                     var anchor = vacancy.FindElement(By.TagName("a"));
                     url.Append(anchor.GetAttribute("href"));
 
-                    var id = (Regex.Match(url.ToString(), @"(?<=vacancy/)([0-9]+)").Value);
+                    var id = Regex.Match(url.ToString(), @"(?<=vacancy/)([0-9]+)").Value;
 
                     var city = vacancy.FindElement(By.CssSelector("div[data-qa='vacancy-serp__vacancy-address']"));
         

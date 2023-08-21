@@ -36,7 +36,6 @@ sealed class Bot : IHostedService
 
     public Bot()
     {
-        
         Client = new (token);
         json = new ();
 
@@ -329,13 +328,12 @@ sealed class Bot : IHostedService
         if (vacancies.Count <= 10)
         {
             for (index = 0; index < vacancies.Count; index++)
-                stringBuilder.Append($"<a href=\"{vacancies[index].Item1}\">{vacancies[index].Item2}\n</a>");
+                 stringBuilder.Append($"<a href=\"{vacancies[index].Item1}\">{vacancies[index].Item2}\n</a>");
         }
         else
         {
             for (index = 0; index < 10; index++)
-                stringBuilder.Append($"<a href=\"{vacancies[index].Item1}\">{vacancies[index].Item2}\n</a>");
-            
+                 stringBuilder.Append($"<a href=\"{vacancies[index].Item1}\">{vacancies[index].Item2}\n</a>");
         }
     }
 

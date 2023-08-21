@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using BotSpace;
 using VacScrapper;
 
-
 class Program
 {
     static async Task Main(string[] args)
@@ -22,7 +21,5 @@ class Program
         var app = appBuilder.Build();
 
         await app.RunAsync(cts.Token);
-
-        // cts.Cancel();
     }
 }

@@ -40,7 +40,7 @@ public sealed class Scrapper : BackgroundService
             Vacancies = new ();
             options = new ();
             options.AddArguments(new string [] {
-                    // "--headless",
+                    "--headless",
                     "--whitelisted-ips=\"\"",
                     "--disable-dev-shm-usage",
                     "--no-sandbox",
@@ -197,15 +197,15 @@ public sealed class Scrapper : BackgroundService
         {
             logger.LogError("Парсер прерван");
         }
-        catch (ElementClickInterceptedException e)
+        catch (ElementClickInterceptedException)
         {
-            logger.LogError($"Проблема при работе с элементами. Возможно, структура сайта изменена. Перезапуск парсера.\n {e}");
+            logger.LogError($"Проблема при работе с элементами. Возможно, структура сайта изменена. Перезапуск парсера");
 
             elementsAreOk = false;
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            logger.LogError($"Проблема при работе с элементами. Возможно, структура сайта изменена. Перезапуск парсера.\n {e}");
+            logger.LogError($"Проблема при работе с элементами. Возможно, структура сайта изменена. Перезапуск парсера.");
 
             elementsAreOk = false;
         }

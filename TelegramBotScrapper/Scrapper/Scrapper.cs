@@ -45,11 +45,7 @@ public sealed class Scrapper
                     "--disable-dev-shm-usage",
                     "--no-sandbox",
                     UserAgent,
-                    // "--start-maximized",
                     "--window-size=1920,1050",
-                    "--disable-web-security",
-                    "--ignore-certificate-errors",
-                    "--allow-running-insecure-content",
                     "--allow-insecure-localhost",
                     "--disable-gpu",
                     "--disable-logging",
@@ -83,7 +79,9 @@ public sealed class Scrapper
     {
         try
         {
-            driver.FindElement(By.XPath("//button[@class='bloko-button bloko-button_kind-primary bloko-button_scale-small']")).Click();
+            var isItYourRegion = driver.FindElement(By.XPath("//button[@class='bloko-button bloko-button_kind-primary bloko-button_scale-small']"));
+
+             wait.Until(ExpectedConditions.ElementToBeClickable(isItYourRegion)).Click();
 
             Func<string> inputText = delegate{
 
@@ -118,7 +116,8 @@ public sealed class Scrapper
                                     .FindElement(By.CssSelector("span[data-qa='serp__novafilter-title']"))
                                     .FindElement(By.XPath("./.."));
 
-            uncheckElmt.Click();
+            wait.Until(ExpectedConditions.ElementToBeClickable(uncheckElmt)).Click();
+
             Thread.Sleep(milliseconds[rand.Next(0, 3)]);
 
             driver.FindElement(By.XPath("//button[@class='bloko-link bloko-link_pseudo' and text()='Показать все']")).Click();

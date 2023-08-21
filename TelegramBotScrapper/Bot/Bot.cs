@@ -18,7 +18,7 @@ namespace BotSpace;
 sealed class Bot
 {
     private TelegramBotClient? Client;
-    private readonly string token = "6090888687:AAEy4boNJ3xvaznaT3BKEjZTa9UxnL9oTPA";
+    private readonly string token = "6090888687:AAFlnw12sbzUOWK9tiKfTvxaw_ZlBp-o5ZA";
     ReceiverOptions receiverOptions;
 
     InlineKeyboardMarkup inlineKeyboardMarkup;

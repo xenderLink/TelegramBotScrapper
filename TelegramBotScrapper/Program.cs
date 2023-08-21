@@ -1,21 +1,28 @@
-﻿using BotSpace;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using BotSpace;
 using VacScrapper;
+
 
 class Program
 {
-    static async Task Main()
+    static async Task Main(string[] args)
     {
-        Bot bot = new ();
-        Scrapper scrapper = new ();
+        using CancellationTokenSource cts = new ();
+        
+        HostApplicationBuilder botBuilder = Host.CreateApplicationBuilder(args);
 
-        Thread scrapperThread = new (scrapper.Start)
-        {
-            IsBackground = true,
-            Name = "Scrapper"
-        };
+        var appBuilder = Host.CreateDefaultBuilder(args).ConfigureServices(bldr =>
+            {
+                bldr.AddHostedService<Bot>();
+                bldr.AddHostedService<Scrapper>();
+                bldr.Configure<HostOptions>(opts => opts.ShutdownTimeout = TimeSpan.FromSeconds(3));
+            });
         
-        scrapperThread.Start();
-        
-        await bot.Start();
+        var app = appBuilder.Build();
+
+        await app.RunAsync(cts.Token);
+
+        // cts.Cancel();
     }
 }

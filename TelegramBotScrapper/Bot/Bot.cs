@@ -6,6 +6,7 @@ using Telegram.Bot.Types.Enums;
 using JsonCrud;
 
 using Update = Telegram.Bot.Types.Update;
+using Microsoft.Extensions.Hosting;
 
 namespace BotSpace;
 /// <summary>
@@ -15,10 +16,10 @@ namespace BotSpace;
 /// При отключении бота и его перепзапуска, кнопка "Далее" возвращает список городов, а не вакансии в виду 
 /// NullReferenceException.
 /// </remarks>
-sealed class Bot
+sealed class Bot : IHostedService
 {
     private TelegramBotClient? Client;
-    private readonly string token = "token";
+    private readonly string token = "6090888687:AAFlnw12sbzUOWK9tiKfTvxaw_ZlBp-o5ZA";
     ReceiverOptions receiverOptions;
 
     InlineKeyboardMarkup inlineKeyboardMarkup;
@@ -30,11 +31,12 @@ sealed class Bot
     private readonly string[] cities = { "Челябинск", "Екатеринбург", "Москва", "Санкт-Петербург" };
 
     JsonVacancy json;   
-    private IReadOnlyList<(string, string)> Chlb, Ekb, Msk, Spb;
+    private IReadOnlyList<(string, string)> Chlb, Ekb, Msk, Spb; // Список городов
     private int cIdx, eIdx, mIdx, sIdx;  //индексы для доступа к элементам массивов вакансий
 
     public Bot()
     {
+        
         Client = new (token);
         json = new ();
 
@@ -72,21 +74,16 @@ sealed class Bot
         });
     } 
     
-    public async Task Start()
-    {
-        using CancellationTokenSource cts = new ();
-
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {    
         Client.StartReceiving(
-               updateHandler: HandleUpdateAsync, 
-               pollingErrorHandler: HandlePollingAsync, receiverOptions,
-               cancellationToken: cts.Token );
+                updateHandler: HandleUpdateAsync, 
+                pollingErrorHandler: HandlePollingAsync, receiverOptions,
+                cancellationToken: cancellationToken);
 
         var user = await Client.GetMeAsync();
 
         Console.WriteLine($"Start listening for @{user.Username}");
-        Console.ReadLine();
-
-        cts.Cancel();
     }
     
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -100,8 +97,8 @@ sealed class Bot
             else
             {
                 var botMsg = await botClient.SendTextMessageAsync(
-                                             chatId: update.Message.Chat.Id,
-                                             text: "Неправильная команда. Для старта бота нажмите /start");
+                                            chatId: update.Message.Chat.Id,
+                                            text: "Неправильная команда. Для старта бота нажмите /start");
 
                 await DeleteMessage(botClient, update.Message.Chat.Id, update.Message.MessageId);
                 await DeleteMessage(botClient, update.Message.Chat.Id, oldBotMsgId);
@@ -289,6 +286,7 @@ sealed class Bot
     public async Task HandlePollingAsync(ITelegramBotClient client, Exception exception, CancellationToken token)
     {
         Console.WriteLine($"HandException: {exception}");
+        await StopAsync(token);
     }
 
     private async Task SendCities(ITelegramBotClient botClient, Update update)
@@ -331,16 +329,13 @@ sealed class Bot
         if (vacancies.Count <= 10)
         {
             for (index = 0; index < vacancies.Count; index++)
-            {
                 stringBuilder.Append($"<a href=\"{vacancies[index].Item1}\">{vacancies[index].Item2}\n</a>");
-            }
         }
         else
         {
             for (index = 0; index < 10; index++)
-            {
                 stringBuilder.Append($"<a href=\"{vacancies[index].Item1}\">{vacancies[index].Item2}\n</a>");
-            }
+            
         }
     }
 
@@ -351,17 +346,14 @@ sealed class Bot
         if (remainElements > 10)
         {
             for (int j = index + 10; index < j; index++)
-            {
-                stringBuilder.Append($"<a href=\"{vacancies[index].Item1}\">{vacancies[index].Item2}\n</a>");
-            }
+                 stringBuilder.Append($"<a href=\"{vacancies[index].Item1}\">{vacancies[index].Item2}\n</a>");
+        
         }
         else
         {
             for (; index < vacancies.Count; index++)
-            {
-                stringBuilder.Append($"<a href=\"{vacancies[index].Item1}\">{vacancies[index].Item2}\n</a>");
-            }
-
+                 stringBuilder.Append($"<a href=\"{vacancies[index].Item1}\">{vacancies[index].Item2}\n</a>");
+            
             index = 0;
         }
     }
@@ -396,4 +388,6 @@ sealed class Bot
                         
         oldBotMsgId = botMsg.MessageId;
     }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }

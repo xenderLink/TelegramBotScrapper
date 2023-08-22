@@ -7,6 +7,7 @@ using JsonCrud;
 
 using Update = Telegram.Bot.Types.Update;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace BotSpace;
 /// <summary>
@@ -16,10 +17,11 @@ namespace BotSpace;
 /// При отключении бота и его перепзапуска, кнопка "Далее" возвращает список городов, а не вакансии в виду 
 /// NullReferenceException.
 /// </remarks>
-sealed class Bot : IHostedService
+sealed class Bot : BackgroundService
 {
+    private readonly ILogger<Bot> logger;
     private TelegramBotClient? Client;
-    private readonly string token = "token";
+    private readonly string token = "6090888687:AAHgGc9-5Sg8ekqGIm6dwN3EAW1AAnRGGD0";
     ReceiverOptions receiverOptions;
 
     InlineKeyboardMarkup inlineKeyboardMarkup;
@@ -34,10 +36,11 @@ sealed class Bot : IHostedService
     private IReadOnlyList<(string, string)> Chlb, Ekb, Msk, Spb; // Список городов
     private int cIdx, eIdx, mIdx, sIdx;  //индексы для доступа к элементам массивов вакансий
 
-    public Bot()
+    public Bot(ILogger<Bot> lggr)
     {
         Client = new (token);
         json = new ();
+        logger = lggr;
 
         receiverOptions = new ()
         {
@@ -73,7 +76,7 @@ sealed class Bot : IHostedService
         });
     } 
     
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected async override Task ExecuteAsync(CancellationToken cancellationToken)
     {    
         Client.StartReceiving(
                 updateHandler: HandleUpdateAsync, 
@@ -84,6 +87,8 @@ sealed class Bot : IHostedService
 
         Console.WriteLine($"Start listening for @{user.Username}");
     }
+
+    public async Task HandlePollingAsync(ITelegramBotClient client, Exception exception, CancellationToken token) => logger.LogError($"HandException: Ошибка при обработке соединения");
     
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
@@ -282,12 +287,6 @@ sealed class Bot : IHostedService
         }
     }
 
-    public async Task HandlePollingAsync(ITelegramBotClient client, Exception exception, CancellationToken token)
-    {
-        Console.WriteLine($"HandException: {exception}");
-        await StopAsync(token);
-    }
-
     private async Task SendCities(ITelegramBotClient botClient, Update update)
     {
         long chatId = 0;
@@ -386,6 +385,4 @@ sealed class Bot : IHostedService
                         
         oldBotMsgId = botMsg.MessageId;
     }
-
-    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }

@@ -21,7 +21,7 @@ sealed class Bot : BackgroundService
 {
     private readonly ILogger<Bot> logger;
     private TelegramBotClient? Client;
-    private readonly string token = "token";
+    private readonly string token = "6090888687:AAHgGc9-5Sg8ekqGIm6dwN3EAW1AAnRGGD0";
     ReceiverOptions receiverOptions;
 
     InlineKeyboardMarkup inlineKeyboardMarkup;

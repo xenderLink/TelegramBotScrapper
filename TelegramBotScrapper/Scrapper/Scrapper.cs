@@ -35,48 +35,55 @@ public sealed class Scrapper : BackgroundService
 
     protected async override Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        try
         {
-            Vacancies = new ();
-            options = new ();
-            options.AddArguments(new string [] {
-                    "--headless",
-                    "--whitelisted-ips=\"\"",
-                    "--disable-dev-shm-usage",
-                    "--no-sandbox",
-                       UserAgent,
-                    "--window-size=1920,1050",
-                    "--disable-gpu",
-                    "--disable-logging",
-                    "--disable-blink-features=AutomationControlled" });
-
-            driver = new ChromeDriver(".", options, TimeSpan.FromMinutes(3));
-            
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-            wait.PollingInterval = TimeSpan.FromMilliseconds(200);
-
-            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
-
-            if (await DriverIsNavigated(cancellationToken) is false)
+            while (true)
             {
-                if (failsCount is 0)
+                Vacancies = new ();
+                options = new ();
+                options.AddArguments(new string [] {
+                        "--headless",
+                        "--whitelisted-ips=\"\"",
+                        "--disable-dev-shm-usage",
+                        "--no-sandbox",
+                        UserAgent,
+                        "--window-size=1920,1050",
+                        "--disable-gpu",
+                        "--disable-logging",
+                        "--disable-blink-features=AutomationControlled" });
+
+                driver = new ChromeDriver(".", options, TimeSpan.FromMinutes(3));
+                
+                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                wait.PollingInterval = TimeSpan.FromMilliseconds(200);
+
+                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+
+                if (await DriverIsNavigated(cancellationToken) is false)
                 {
-                    failsCount = 3;
-                    await Task.Delay(TimeSpan.FromMinutes(30), cancellationToken);
+                    if (failsCount is 0)
+                    {
+                        failsCount = 3;
+                        await Task.Delay(TimeSpan.FromMinutes(30), cancellationToken);
+                    }
+                    continue;
                 }
-                continue;
-            }
-            
-            if (await IsElementPresent(cancellationToken) is false)
-                continue;
-            
-            else
-            {
-                JsonVacancy vacancies = new ();
-                await vacancies.Add(Vacancies);
-            }
+                
+                if (await IsElementPresent(cancellationToken) is false)
+                    continue;
+                
+                else
+                {
+                    JsonVacancy vacancies = new ();
+                    await vacancies.Add(Vacancies);
+                }
 
-            await Task.Delay(TimeSpan.FromHours(7), cancellationToken);
+                await Task.Delay(TimeSpan.FromHours(7), cancellationToken);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogError("Парсер прерван");
         }
     }
 

@@ -14,7 +14,7 @@ class Program
         var appBuilder = Host.CreateDefaultBuilder(args).ConfigureServices(bldr =>
             {
                 bldr.AddHostedService<Bot>();
-                bldr.AddHostedService<VacScrapper>();
+                bldr.AddHostedService<HhRuVacScrapper>();
                 bldr.Configure<HostOptions>(opts => opts.ShutdownTimeout = TimeSpan.FromSeconds(3));
             });
         

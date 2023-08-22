@@ -14,7 +14,7 @@ namespace Scrapper;
 /// Иногда этот класс будет переписываться в виду того, что разработчики hh.ru будут менять 
 /// код в JS-скриптах, которые генерируют DOM-страницы.  
 /// </summary>
-public sealed class VacScrapper : Scrapper
+public sealed class HhRuVacScrapper : Scrapper
 {
     private readonly ILogger logger;
     private IWebDriver driver;
@@ -29,7 +29,7 @@ public sealed class VacScrapper : Scrapper
 
     private int failsCount = 3;
 
-    public VacScrapper(ILogger<Scrapper> lggr) => (logger, url) = (lggr, new StringBuilder());
+    public HhRuVacScrapper(ILogger<Scrapper> lggr) => (logger, url) = (lggr, new StringBuilder());
 
     protected async override Task ExecuteAsync(CancellationToken cancellationToken)
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using BotSpace;
-using VacScrapper;
+using Scrapper;
 
 class Program
 {
@@ -14,7 +14,7 @@ class Program
         var appBuilder = Host.CreateDefaultBuilder(args).ConfigureServices(bldr =>
             {
                 bldr.AddHostedService<Bot>();
-                bldr.AddHostedService<Scrapper>();
+                bldr.AddHostedService<VacScrapper>();
                 bldr.Configure<HostOptions>(opts => opts.ShutdownTimeout = TimeSpan.FromSeconds(3));
             });
         

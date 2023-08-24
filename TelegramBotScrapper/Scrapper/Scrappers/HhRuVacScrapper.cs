@@ -5,7 +5,6 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using SeleniumExtras.WaitHelpers;
 using OpenQA.Selenium.Support.UI;
-using VacancyModel;
 using JsonCrud;
 
 namespace Scrapper;

@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using VacancyModel;
 
 namespace JsonCrud;
 /// <summary>
@@ -8,6 +7,8 @@ namespace JsonCrud;
 /// Простые операции для добавления вакансий, удаления файла с вакансиями
 /// и фильтрацией при чтении данных из файла.
 /// </summary>
+public record Vacancy(string Name, string Url, string City); // модель для вакансии. Рид-онли.
+
 public abstract class JsonVacancy
 {
     protected abstract string filePath { get; set; }

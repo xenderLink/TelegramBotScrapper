@@ -24,14 +24,15 @@ public sealed class HhRuVacScrapper : Scrapper
     private ChromeOptions options;
     
     private readonly int[] milliseconds = { 3000, 4000, 5000, 6000, 7000 };
+    private int failsCount = 3;
 
     private Dictionary<string, Vacancy> Vacancies;
     private string[] cities = { "Челябинск", "Екатеринбург", "Москва", "Санкт-Петербург" };
-    private StringBuilder url;
+    private StringBuilder urlScrapper;
 
-    private int failsCount = 3;
+    
 
-    public HhRuVacScrapper(ILogger<Scrapper> lggr) => (logger, url) = (lggr, new StringBuilder());
+    public HhRuVacScrapper(ILogger<Scrapper> lggr) => (logger, urlScrapper) = (lggr, new StringBuilder());
 
     protected async override Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -53,9 +54,11 @@ public sealed class HhRuVacScrapper : Scrapper
                         "--disable-blink-features=AutomationControlled" });
 
                 driver = new ChromeDriver(".", options, TimeSpan.FromMinutes(3));
-                
-                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-                wait.PollingInterval = TimeSpan.FromMilliseconds(200);
+
+                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10))
+                       {
+                          PollingInterval = TimeSpan.FromMilliseconds(200)
+                       };
 
                 await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
 
@@ -177,21 +180,21 @@ public sealed class HhRuVacScrapper : Scrapper
                 foreach (var vacancy in vacancyElements)  // перебор блоков и собирание информацию с каждого из них
                 {
                     var anchor = vacancy.FindElement(By.TagName("a"));
-                    url.Append(anchor.GetAttribute("href"));
+                    urlScrapper.Append(anchor.GetAttribute("href"));
 
-                    var id = Regex.Match(url.ToString(), @"(?<=vacancy/)([0-9]+)").Value;
+                    var id = Regex.Match(urlScrapper.ToString(), @"(?<=vacancy/)([0-9]+)").Value;
 
                     var city = vacancy.FindElement(By.CssSelector("div[data-qa='vacancy-serp__vacancy-address']"));
         
                     if (Vacancies.ContainsKey(id) is true) // Проверка на наличие вакансии в словаре
                     {
-                        url.Clear();
+                        urlScrapper.Clear();
                         continue;                        
                     }
                     
-                    Vacancies.Add(id, new Vacancy(anchor.Text, url.ToString(), city.Text));
+                    Vacancies.Add(id, new Vacancy(anchor.Text, urlScrapper.ToString(), city.Text));
 
-                    url.Clear();
+                    urlScrapper.Clear();
                 }
 
                 var btnExist = await Task.Run( () => NextButtonExists("//span[text()='дальше']"), cancellationToken);                
@@ -205,7 +208,7 @@ public sealed class HhRuVacScrapper : Scrapper
         }
         catch (OperationCanceledException)
         {
-            logger.LogError("Парсер прерван");
+            logger.LogError("Прервание на скрэппинге");
         }
         catch (ElementClickInterceptedException)
         {
@@ -230,13 +233,14 @@ public sealed class HhRuVacScrapper : Scrapper
     private async Task<bool> DriverIsNavigated(CancellationToken cancellationToken)
     {
         bool driverIsStarted = true;
+
         try 
         {
             driver.Navigate().GoToUrl("https://hh.ru/");
         }
         catch (OperationCanceledException)
         {
-            logger.LogError("Парсер прерван");
+            logger.LogError("Прерывание на навигации");
             driver.Dispose();
             
             await Task.Delay(1, cancellationToken);
@@ -244,10 +248,10 @@ public sealed class HhRuVacScrapper : Scrapper
         catch (WebDriverException)
         {
             logger.LogError($"Ошибка запуска парсера. После {failsCount} раз(а), запуск парсера будет через 30 минут.");
-            
+            driver.Dispose();
+
             failsCount--;
             driverIsStarted = false; 
-            driver.Dispose();
         }
 
         return driverIsStarted;
@@ -265,8 +269,8 @@ public sealed class HhRuVacScrapper : Scrapper
         }
         catch (OperationCanceledException)
         {
+            logger.LogError("Прерывание на поиске кнопки \"Далее\"");
             driver.Dispose();
-            logger.LogError("Парсер прерван");
         }
         catch (NoSuchElementException)
         {

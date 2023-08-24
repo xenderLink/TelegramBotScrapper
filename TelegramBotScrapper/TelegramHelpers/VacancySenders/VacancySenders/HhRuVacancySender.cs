@@ -12,9 +12,10 @@ public sealed class HhRuVacancySender : VacancySender
     private HhRuJsonVacancy json;
     protected override string greetingMessage { get; set; } = "Выберите город, в котором вас интересует список вакансикй на hh.ru";
 
+    // кнопка, которая возвращает название сервиса для связи "сервис-города"
     protected override InlineKeyboardButton[] citiesButton { get; set; } = 
-        { new InlineKeyboardButton("К списку городов") { CallbackData = "hh.ru" } }; // кнопка, которая возвращает название сервиса
-
+        { new InlineKeyboardButton("К списку городов") { CallbackData = "hh.ru" } };  
+                                                                                     
     public HhRuVacancySender() : base(){  json = new (); }
 
     public async override Task SendVacancies(ITelegramBotClient client, Update update)
@@ -151,7 +152,8 @@ public sealed class HhRuVacancySender : VacancySender
                 // Санкт-Петербург
                 else if (update.CallbackQuery.Message.Text.Contains(cities[3])) 
                 {
-                    if (Spb is null) await SendCities(client, update);
+                    if (Spb is null) 
+                        await SendCities(client, update);
 
                     else
                     {

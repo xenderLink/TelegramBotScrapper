@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     libcurl3-gnutls
 
-ADD ChromPackages/chrome.deb ./
+ADD ChromePackages/chrome.deb ./
 RUN dpkg -i chrome.deb
 
 WORKDIR /
@@ -44,7 +44,7 @@ RUN rm -rf Chrome
 
 WORKDIR /App
 RUN mkdir -p JsonCrud
-ADD ChromPackages/chromedriver .
+ADD ChromePackages/chromedriver .
 COPY --from=build-env /build/out .
 
 EXPOSE 10112

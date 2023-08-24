@@ -35,9 +35,8 @@ public sealed class HhRuVacancySender : VacancySender
                 Chlb = await json.GetVacancies(update.CallbackQuery.Data);
                 
                 if (Chlb.Count is 0)
-                {
                     await NoVacancies(client, update);        
-                }
+                
                 else if (Chlb.Count > 0)
                 {
                     StringBuilder sb = new ();
@@ -53,9 +52,8 @@ public sealed class HhRuVacancySender : VacancySender
                 Ekb = await json.GetVacancies(update.CallbackQuery.Data);
                 
                 if (Ekb.Count is 0) 
-                {
                     await NoVacancies(client, update);
-                }
+        
                 else if (Ekb.Count > 0)
                 {
                     StringBuilder sb = new ();
@@ -71,9 +69,8 @@ public sealed class HhRuVacancySender : VacancySender
                 Msk = await json.GetVacancies(update.CallbackQuery.Data);
                 
                 if (Msk.Count is 0)
-                {
                     await NoVacancies(client, update);
-                }
+
                 else if (Msk.Count > 0)
                 {
                     StringBuilder sb = new ();
@@ -89,9 +86,8 @@ public sealed class HhRuVacancySender : VacancySender
                 Spb = await json.GetVacancies(update.CallbackQuery.Data);
                 
                 if (Spb.Count is 0)
-                {
                     await NoVacancies(client, update);
-                }
+            
                 else if (Spb.Count > 0)
                 {
                     StringBuilder sb = new ();

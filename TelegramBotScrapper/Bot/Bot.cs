@@ -20,7 +20,7 @@ public sealed class Bot : BackgroundService
 {
     private readonly ILogger<Bot> logger;
     private TelegramBotClient? Client;
-    private readonly string token = "6090888687:AAGe8IuQ_bTqNOITMLDoqMuAyEJWHA9jZpc";
+    private readonly string token = "token";
     
     // BotConf
     ReceiverOptions receiverOptions;

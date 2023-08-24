@@ -4,7 +4,6 @@ using TelegramBotScrapper.Helpers;
 using BotScrapper;
 using Scrapper;
 
-
 class Program
 {
     static async Task Main(string[] args)

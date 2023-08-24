@@ -89,6 +89,8 @@ public abstract class VacancySender : IVacancySender
                                      chatId: update.CallbackQuery.Message.Chat.Id,
                                      text: $"В этом городе нет подходящих вакансий.",
                                      replyMarkup: backToKeyboard);
+        
+        await MessageDeleter.DeleteMessage(botClient, update.CallbackQuery.Message.Chat.Id, oldBotMsgId);
                         
         oldBotMsgId = botMsg.MessageId;
     }

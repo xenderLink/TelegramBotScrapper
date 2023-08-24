@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using BotSpace;
+using TelegramBotScrapper.Helpers;
+using BotScrapper;
 using Scrapper;
+
 
 class Program
 {
@@ -9,14 +11,11 @@ class Program
     {
         using CancellationTokenSource cts = new ();
         
-        HostApplicationBuilder botBuilder = Host.CreateApplicationBuilder(args);
+        var appBuilder = Host.CreateApplicationBuilder(args);
 
-        var appBuilder = Host.CreateDefaultBuilder(args).ConfigureServices(bldr =>
-            {
-                bldr.AddHostedService<Bot>();
-                bldr.AddHostedService<HhRuVacScrapper>();
-                bldr.Configure<HostOptions>(opts => opts.ShutdownTimeout = TimeSpan.FromSeconds(3));
-            });
+        appBuilder.Services.AddHostedService<Bot>();
+        appBuilder.Services.AddHostedService<HhRuVacScrapper>();
+        appBuilder.Services.AddSingleton<HhRuVacancySender>();
         
         var app = appBuilder.Build();
 

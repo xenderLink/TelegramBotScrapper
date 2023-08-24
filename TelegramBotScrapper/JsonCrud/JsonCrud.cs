@@ -8,14 +8,15 @@ namespace JsonCrud;
 /// Простые операции для добавления вакансий, удаления файла с вакансиями
 /// и фильтрацией при чтении данных из файла.
 /// </summary>
-sealed class JsonVacancy
+public abstract class JsonVacancy
 {
-    private readonly string path = JsonPath;
-    private string json = string.Empty;
+    protected abstract string filePath { get; set; }
+    protected static string vacDirectory => Path.Combine(Directory.GetCurrentDirectory()).ToString() + "/JsonCrud/";
+    protected string json = string.Empty;
 
     private JsonSerializerOptions opts;
 
-    public JsonVacancy()
+    protected JsonVacancy()
     {
         opts = new ()
         {
@@ -24,15 +25,13 @@ sealed class JsonVacancy
         };
     }
 
-    private static string JsonPath => Path.Combine(Directory.GetCurrentDirectory()).ToString() + "/JsonCrud/vacancies.json";
-        
     public async Task Add(Dictionary<string, Vacancy> recievedVac)
     {
         try
         {
-            if (File.Exists(path))
+            if (File.Exists(filePath))
             {
-                FileInfo fi = new (path);
+                FileInfo fi = new (filePath);
 
                 if (fi.CreationTimeUtc.Date < DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+5)).DateTime.AddDays(-3).Date) // удалять через три дня
                 {
@@ -40,14 +39,14 @@ sealed class JsonVacancy
 
                     json = JsonSerializer.Serialize(recievedVac, options: opts);
 
-                    using (StreamWriter sw = new (path))
+                    using (StreamWriter sw = new (filePath))
                     {
                         await sw.WriteAsync(json);
                     };
                 }
                 else
                 {
-                    json = await File.ReadAllTextAsync(path);
+                    json = await File.ReadAllTextAsync(filePath);
                     var vacancies = JsonSerializer.Deserialize<Dictionary<string, Vacancy>>(json);
 
                     foreach (var vacancy in recievedVac)
@@ -58,7 +57,7 @@ sealed class JsonVacancy
 
                     json = JsonSerializer.Serialize(vacancies, options: opts);
 
-                    using (StreamWriter sw = new (path))
+                    using (StreamWriter sw = new (filePath))
                     {
                         await sw.WriteAsync(json);
                     }
@@ -68,7 +67,7 @@ sealed class JsonVacancy
             {
                 json = JsonSerializer.Serialize(recievedVac, options: opts);
 
-                using (StreamWriter sw = new (path))
+                using (StreamWriter sw = new (filePath))
                 {
                     await sw.WriteAsync(json);
                 };
@@ -84,11 +83,11 @@ sealed class JsonVacancy
     {
         if (!string.IsNullOrEmpty(city))
         {
-            if (File.Exists(path))
+            if (File.Exists(filePath))
             {
                 List<(string, string)> vacByCity = new ();
 
-                var Json = await File.ReadAllTextAsync(path);
+                var Json = await File.ReadAllTextAsync(filePath);
                 var vacancies = JsonSerializer.Deserialize<Dictionary<string, Vacancy>>(Json);
 
                 foreach (var vacancy in vacancies)

@@ -10,10 +10,12 @@ using JsonCrud;
 
 namespace Scrapper;
 /// <summary>
-/// Класс для сборки вакансий по тэгам, селекторам и xpath
-/// Иногда этот класс будет переписываться в виду того, что разработчики hh.ru будут менять 
-/// код в JS-скриптах, которые генерируют DOM-страницы.  
+/// Класс для сборки вакансий по тэгам, селекторам и xpath 
 /// </summary>
+/// <remarks>
+/// Иногда этот класс будет переписываться в виду того, что разработчики hh.ru будут менять 
+/// код в JS-скриптах, которые генерируют DOM-страницы.
+/// </remarks>
 public sealed class HhRuVacScrapper : Scrapper
 {
     private readonly ILogger logger;
@@ -72,7 +74,7 @@ public sealed class HhRuVacScrapper : Scrapper
                 
                 else
                 {
-                    JsonVacancy vacancies = new ();
+                    HhRuJsonVacancy vacancies = new ();
                     await vacancies.Add(Vacancies);
                 }
 
@@ -81,6 +83,7 @@ public sealed class HhRuVacScrapper : Scrapper
         }
         catch (OperationCanceledException)
         {
+            driver.Dispose();
             logger.LogError("Парсер прерван");
         }
     }
@@ -162,6 +165,7 @@ public sealed class HhRuVacScrapper : Scrapper
                                         .FindElement(By.XPath("./.."));
                 
                 checkedCity.Click();
+                
                 await Task.Delay(milliseconds[rand.Next(2, 5)], cancellationToken);
             }
 
@@ -188,11 +192,12 @@ public sealed class HhRuVacScrapper : Scrapper
                     Vacancies.Add(id, new Vacancy(anchor.Text, url.ToString(), city.Text));
 
                     url.Clear();
-                }                
+                }
+
+                var btnExist = await Task.Run( () => NextButtonExists("//span[text()='дальше']"), cancellationToken);                
  
-                if (await NextButtonExists("//span[text()='дальше']", cancellationToken) is false) // кнопка "Дальше" и если её нет, то выйти из цикла по перебору страниц
+                if (btnExist is false) // кнопка "Дальше" и если её нет, то выйти из цикла по перебору страниц
                     break;
-                
                 
                 await Task.Delay(milliseconds[rand.Next(0, 3)], cancellationToken);
                 
@@ -248,19 +253,20 @@ public sealed class HhRuVacScrapper : Scrapper
         return driverIsStarted;
     }
 
-    public async Task<bool> NextButtonExists (string element, CancellationToken cancellationToken)
+    private bool NextButtonExists (string element)
     {
         bool isThereNextButton = true;
         try
         {
             var nextButton = driver.FindElement(By.XPath(element)).FindElement(By.XPath("./..")); // ищем кнопку
 
-            wait.Until(ExpectedConditions.ElementToBeClickable(nextButton)).Click();              // когда нашли, то ждём, чтобы она стала "нажимаемой"
+            wait.Until(ExpectedConditions.ElementToBeClickable(nextButton));
+            ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click()", nextButton);      // когда нашли, то ждём, чтобы она стала "нажимаемой"
         }
         catch (OperationCanceledException)
         {
+            driver.Dispose();
             logger.LogError("Парсер прерван");
-            await Task.Delay(1, cancellationToken);
         }
         catch (NoSuchElementException)
         {

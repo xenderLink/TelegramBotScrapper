@@ -452,4 +452,8 @@ TelegramBotScrapper/.vscode/
 README.md
 
 TelegramBotScrapper/obj/
+<<<<<<< HEAD
 TelegramBotScrapper/bin/
+=======
+TelegramBotScrapper/bin/
+>>>>>>> 7f524af (readme)

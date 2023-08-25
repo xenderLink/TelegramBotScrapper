@@ -5,10 +5,10 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegramBotScrapper.Helpers;
 
-public abstract class VacancySender
+public abstract class TgBotMessageBuilder
 {
     protected readonly string[] cities = { "Челябинск", "Екатеринбург", "Москва", "Санкт-Петербург" };
-    protected abstract string greetingMessage { get; set; }                     // сообщение по 
+    protected abstract string greetingMessage { get; set; }                     // сообщение с городами у сервиса 
 
     protected int oldBotMsgId = 0;
 
@@ -16,14 +16,13 @@ public abstract class VacancySender
     protected int cIdx, eIdx, mIdx, sIdx;                                       // Индексы по городам
 
     protected InlineKeyboardMarkup citiesKeyboard, navKeyboard, backToKeyboard;
-    protected abstract InlineKeyboardButton[] citiesButton { get; set; }        // кнопка для связи "города-сервис"
+    protected abstract InlineKeyboardButton citiesButton { get; set; }          // кнопка для связи "города-сервис"
 
-    public abstract Task SendVacancies(ITelegramBotClient client, Update update);
+    // public abstract Task SendVacancies(ITelegramBotClient client, Update update);
 
-    public VacancySender()
+    public TgBotMessageBuilder()
     {
-        var servicesButton =  new InlineKeyboardButton[] { "К списку сервисов" };
-
+        var servicesButton =  new InlineKeyboardButton("К списку сервисов") { CallbackData = "К списку сервисов" };
         citiesKeyboard = new (new []
         {
             new InlineKeyboardButton[] { new InlineKeyboardButton(cities[0]) { CallbackData = cities[0] },
@@ -33,20 +32,18 @@ public abstract class VacancySender
             new InlineKeyboardButton[] { new InlineKeyboardButton(cities[2]) { CallbackData = cities[2] },
                                          new InlineKeyboardButton(cities[3]) { CallbackData = cities[3] }
                                        },
-            servicesButton
+            new InlineKeyboardButton[] { servicesButton } 
         });
         
         navKeyboard = new (new []
         {
             new InlineKeyboardButton[] { "Далее" },
-            citiesButton,
-            servicesButton
+            new InlineKeyboardButton[] { citiesButton, servicesButton }
         });
         
         backToKeyboard = new (new []
         {
-            citiesButton,
-            servicesButton
+            citiesButton, servicesButton
         });        
     }
 

@@ -27,15 +27,14 @@ public sealed class Bot : BackgroundService
     InlineKeyboardMarkup servicesKeyboard;
 
     // Helpers
-    HhRuVacancySender hhRuVacancySender;
+    IHhRuVacancySender hhRuVacancySender;
 
     private int oldBotMsgId = 0; //ID сообщения для удаления
     private readonly string greetingMessage = "Добро пожаловать в парсер вакансий C#. Выберите сервис, в котором вас интересуют вакансий.";
 
-    public Bot(HhRuVacancySender hhRuVcSndr, ILogger<Bot> lggr)
+    public Bot(IHhRuVacancySender hhRuVcSndr, ILogger<Bot> lggr)
     {
         Client = new (token);
-
         hhRuVacancySender = hhRuVcSndr;
         logger = lggr;
 
@@ -63,7 +62,7 @@ public sealed class Bot : BackgroundService
 
         var user = await Client.GetMeAsync();
 
-        logger.LogError($"Start listening for @{user.Username}");
+        logger.LogInformation($"Start listening for @{user.Username}");
     }
 
     public async Task HandlePollingAsync(ITelegramBotClient client, Exception exception, CancellationToken token) => 

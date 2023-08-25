@@ -14,7 +14,7 @@ class Program
 
         appBuilder.Services.AddHostedService<Bot>();
         appBuilder.Services.AddHostedService<HhRuVacScrapper>();
-        appBuilder.Services.AddSingleton<HhRuVacancySender>();
+        appBuilder.Services.AddSingleton<IHhRuVacancySender, HhRuVacancySender>();
         
         var app = appBuilder.Build();
 

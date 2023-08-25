@@ -7,18 +7,17 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegramBotScrapper.Helpers;
 
-public sealed class HhRuVacancySender : VacancySender
+public sealed class HhRuVacancySender : TgBotMessageBuilder, IHhRuVacancySender
 {
     private HhRuJsonVacancy json;
     protected override string greetingMessage { get; set; } = "Выберите город, в котором вас интересует список вакансикй на hh.ru";
 
     // кнопка, которая возвращает название сервиса для связи "сервис-города"
-    protected override InlineKeyboardButton[] citiesButton { get; set; } = 
-        { new InlineKeyboardButton("К списку городов") { CallbackData = "hh.ru" } };  
+    protected override InlineKeyboardButton citiesButton { get; set; } = new InlineKeyboardButton("К списку городов"){ CallbackData = "hh.ru" }; 
                                                                                      
     public HhRuVacancySender() : base(){  json = new (); }
 
-    public async override Task SendVacancies(ITelegramBotClient client, Update update)
+    public async Task SendVacancies(ITelegramBotClient client, Update update)
     {
         switch (update.CallbackQuery.Data)
         {

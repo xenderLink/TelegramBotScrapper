@@ -86,7 +86,7 @@ public sealed class HhRuVacScrapper : Scrapper
         catch (OperationCanceledException)
         {
             driver.Dispose();
-            logger.LogError("Парсер прерван");
+            logger.LogInformation("Парсер остановлен");
         }
     }
 
@@ -259,6 +259,7 @@ public sealed class HhRuVacScrapper : Scrapper
     private bool NextButtonExists (string element)
     {
         bool isThereNextButton = true;
+
         try
         {
             var nextButton = driver.FindElement(By.XPath(element)).FindElement(By.XPath("./..")); // ищем кнопку

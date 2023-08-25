@@ -29,7 +29,7 @@ public sealed class Bot : BackgroundService
     IHhRuVacancySender hhRuVacancySender;
 
     private int oldBotMsgId = 0; //ID сообщения для удаления
-    private readonly string greetingMessage = "Добро пожаловать в парсер вакансий C#. Выберите сервис, в котором вас интересуют вакансий.";
+    private readonly string greetingMessage = "Добро пожаловать в парсер вакансий C#. Выберите сервис, в котором вас интересуют вакансии.";
 
     public Bot(IHhRuVacancySender hhRuVcSndr, ILogger<Bot> lggr)
     {

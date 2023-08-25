@@ -10,7 +10,7 @@ namespace TelegramBotScrapper.Helpers;
 public sealed class HhRuVacancySender : TgBotMessageBuilder, IHhRuVacancySender
 {
     private HhRuJsonVacancy json;
-    protected override string greetingMessage { get; set; } = "Выберите город, в котором вас интересует список вакансикй на hh.ru";
+    protected override string greetingMessage { get; set; } = "Выберите город, в котором вас интересует список вакансий на hh.ru.";
 
     // кнопка, которая возвращает название сервиса для связи "сервис-города"
     protected override InlineKeyboardButton citiesButton { get; set; } = new InlineKeyboardButton("К списку городов"){ CallbackData = "hh.ru" }; 

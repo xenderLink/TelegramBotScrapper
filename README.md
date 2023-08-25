@@ -9,6 +9,10 @@ docker build -t bot-image .
 ```
 docker run --name scrapper -d bot-image
 ```
+Остановить контейнер:
+``
+docker stop scrapper
+```
 Удалить контейнер и образ:
 ```
 docker rm scrapper && docker rmi bot-image

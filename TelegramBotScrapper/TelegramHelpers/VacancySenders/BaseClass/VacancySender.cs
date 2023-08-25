@@ -5,7 +5,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegramBotScrapper.Helpers;
 
-public abstract class VacancySender : IVacancySender
+public abstract class VacancySender
 {
     protected readonly string[] cities = { "Челябинск", "Екатеринбург", "Москва", "Санкт-Петербург" };
     protected abstract string greetingMessage { get; set; }                     // сообщение по 

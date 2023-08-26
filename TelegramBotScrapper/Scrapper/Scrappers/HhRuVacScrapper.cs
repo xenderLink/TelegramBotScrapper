@@ -7,7 +7,7 @@ using SeleniumExtras.WaitHelpers;
 using OpenQA.Selenium.Support.UI;
 using JsonCrud;
 
-namespace Scrapper;
+namespace TelegramBotScrapper.Scrapper;
 /// <summary>
 /// Класс для сборки вакансий по тэгам, селекторам и xpath 
 /// </summary>

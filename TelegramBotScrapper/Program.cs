@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using TelegramBotScrapper.Helpers;
-using BotScrapper;
-using Scrapper;
+using TelegramBotScrapper.Scrapper;
+using TelegramBotScrapper.VacancyBot;
 
 class Program
 {

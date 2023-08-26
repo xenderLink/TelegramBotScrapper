@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Hosting;
 
-namespace Scrapper;
+namespace TelegramBotScrapper.Scrapper;
 
 public abstract class Scrapper : BackgroundService
 {

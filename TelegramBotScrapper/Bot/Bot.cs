@@ -7,7 +7,7 @@ using Telegram.Bot.Types.Enums;
 using TelegramBotScrapper.Helpers;
 using Update = Telegram.Bot.Types.Update;
 
-namespace BotScrapper;
+namespace TelegramBotScrapper.VacancyBot;
 /// <summary>
 /// Простой Telegram-бот. Принимает команды от пользователя, обрабатывает кнопки и возвращает вакансии по городам  
 /// </summary>
